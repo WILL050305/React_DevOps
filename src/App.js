@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import {
   Menu, Search, User, ShoppingCart, X,
-  ChevronLeft, ChevronRight
+  ChevronLeft, ChevronRight,
 } from 'lucide-react';
-  
+
 const products = Array.from({ length: 10 }).map((_, i) => ({
   id: i,
   title: `Producto ${i + 1}`,
-  image: '/images/PORTADA.png' // Sustituye con tus imágenes
+  image: '/images/PORTADA.png'
 }));
 
 const categories = Array.from({ length: 6 }).map((_, i) => ({
@@ -34,7 +34,7 @@ function App() {
     categories.slice(pageIndex * itemsPerCategoryPage, (pageIndex + 1) * itemsPerCategoryPage);
 
   return (
-    <div className="min-h-screen w-full overflow-x-hidden font-sans bg-white">
+    <div className="min-h-screen w-full overflow-x-hidden font-sans bg-white flex flex-col">
 
       {/* Sticky Header */}
       <header className="bg-black text-white w-full py-[14px] shadow-md sticky top-0 z-50 flex items-center justify-between px-4">
@@ -184,6 +184,85 @@ function App() {
           </div>
         </div>
       </div>
+
+      {/* Campañas de Verano e Invierno */}
+      <div className="bg-white py-10 px-4 md:px-12">
+        <h2 className="text-2xl font-semibold mb-6">Campañas de Temporada</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Campaña de Verano */}
+          <div className="relative rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition duration-300">
+            <img
+              src="/images/PORTADA.png"
+              alt="Campaña de Verano"
+              className="w-full h-[22rem] object-cover"
+            />
+            <div className="absolute bottom-0 w-full bg-black/60 text-white p-4">
+              <h3 className="text-xl font-semibold">Campaña de Verano</h3>
+              <p className="text-sm">¡Descubre lo último para el calor con estilo!</p>
+            </div>
+          </div>
+
+          {/* Campaña de Invierno */}
+          <div className="relative rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition duration-300">
+            <img
+              src="/images/PORTADA.png"
+              alt="Campaña de Invierno"
+              className="w-full h-[22rem] object-cover"
+            />
+            <div className="absolute bottom-0 w-full bg-black/60 text-white p-4">
+              <h3 className="text-xl font-semibold">Campaña de Invierno</h3>
+              <p className="text-sm">Abrígate con lo mejor de nuestra colección invernal.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* FOOTER - Último dentro del JSX */}
+      <footer className="bg-black text-white py-10 px-8 mt-auto">
+  <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-start gap-8">
+
+    {/* Enlaces útiles - A la izquierda con espacio */}
+    <div className="flex-1 text-left pl-4 md:pl-0">
+      <h3 className="text-lg font-bold mb-4">Enlaces útiles</h3>
+      <ul className="space-y-2 text-sm">
+        <li><a href="#" className="hover:underline">Inicio</a></li>
+        <li><a href="#" className="hover:underline">Catálogo</a></li>
+        <li><a href="#" className="hover:underline">Nosotros</a></li>
+        <li><a href="#" className="hover:underline">Contacto</a></li>
+      </ul>
+    </div>
+
+    {/* Nombre + descripción - Centro */}
+    <div className="flex-1 text-center">
+      <h3 className="text-lg font-bold mb-4">VEREAU FOR MEN'S</h3>
+      <p className="text-sm max-w-xs mx-auto">
+        La mejor moda masculina para cada ocasión. Calidad y estilo en cada prenda.
+      </p>
+    </div>
+
+    {/* Contacto - Derecha con margen */}
+    <div className="flex-1 text-right pr-4 md:pr-0 space-y-4">
+      <h3 className="text-lg font-bold mb-4">Contacto</h3>
+      <p className="text-sm">Email: contacto@vereau.com</p>
+      <p className="text-sm">Teléfono: +51 987 654 321</p>
+      <p className="text-sm">Dirección: Av. Ejemplo 123, Lima, Perú</p>
+      <form>
+        <input
+          type="email"
+          placeholder="Escribe tu correo"
+          className="w-full max-w-xs px-3 py-2 rounded text-black"
+        />
+      </form>
+    </div>
+  </div>
+
+  <div className="text-center text-sm text-gray-400 mt-8">
+    © 2025 VEREAU FOR MEN'S. Todos los derechos reservados.
+  </div>
+</footer>
+
+
+
 
     </div>
   );
