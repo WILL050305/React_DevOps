@@ -18,9 +18,7 @@ Este proyecto consiste en el desarrollo de una aplicación web para la venta de 
 
 - **React** – Librería para construir interfaces de usuario.
 - **JavaScript (ES6+)** – Lógica funcional de la app.
-- **HTML5 + JSX** – Estructura del contenido.
 - **Tailwind CSS** – Framework utilitario para estilos modernos.
-- **CSS3** – Personalización adicional de estilos.
 - **Git + GitHub** – Control de versiones y colaboración.
 - **Vite o Create React App** – Herramienta de desarrollo rápida.
 - **Netlify / Vercel** – Despliegue automático en la web.
