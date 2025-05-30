@@ -2,10 +2,24 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 
-const products = Array.from({ length: 10 }).map((_, i) => ({
+// Lista de imágenes reales (10 productos distintos)
+const productImages = [
+  '/images/CASACA AMERICANA.jpg',
+  '/images/CASACA ÁNGELES BLANCA.jpg',
+  '/images/CASACA CUERO CON CAPUCHA.jpg',
+  '/images/CASACA IMPERMEABLE.jpg',
+  '/images/CHAQUETA PUFFER RLLIN.jpg',
+  '/images/CONJUNTO PALM ANGELS.jpg',
+  '/images/POLO BOX FIT.jpg',
+  '/images/POLO CAMISERO.jpg',
+  '/images/POLO MANGA LARGA CON CUELLO.jpg',
+  '/images/POLO OVERSIZE TRASLAPE.jpg'
+];
+
+const products = productImages.map((img, i) => ({
   id: i,
   title: `Producto ${i + 1}`,
-  image: '/images/PORTADA.png'
+  image: img
 }));
 
 function ProductSlider() {
