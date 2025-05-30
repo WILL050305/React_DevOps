@@ -37,14 +37,33 @@ Este proyecto consiste en el desarrollo de una aplicación web para la venta de 
 
 ## 🚀 Automatización y buenas prácticas
 
-| Área                         | Herramienta / Beneficio                                           |
-|-----------------------------|-------------------------------------------------------------------|
-| 🔁 Integración Continua     | GitHub Actions: pruebas, lint y build automático con cada push.   |
-| 🚀 Despliegue Automático    | Vercel o Netlify: despliegue inmediato desde rama `main`.         |
-| 🎨 Estilo de código         | ESLint + Prettier: asegura código limpio y consistente.           |
-| 💻 Componentes reutilizables| React con arquitectura modular.                                   |
-| 🧪 Pruebas (opcional)       | Vitest o Jest (para quienes deseen añadir test).                  |
-| 📊 Análisis de rendimiento  | Lighthouse: análisis de accesibilidad, SEO y velocidad.           |
+✅ Beneficios y herramientas asociadas 🚀 Automatización de despliegues
+
+GitHub Actions + Vercel / Netlify Automatiza el despliegue del sitio cada vez que se hace push en la rama principal (main).
+
+🔁 Integración Continua (CI)
+
+GitHub Actions Ejecuta pruebas y validaciones automáticamente con cada cambio en el repositorio.
+
+📦 Entrega Continua (CD)
+
+Vercel / Netlify Publica automáticamente nuevas versiones funcionales del sitio con cada commit.
+
+✅ Control de calidad del código
+
+ESLint / Prettier / SonarQube Estándares de código y análisis estático para mantener código limpio y confiable.
+
+🔄 Portabilidad y escalabilidad
+
+Docker Permite contenerizar la aplicación para despliegue en diferentes entornos sin conflictos.
+
+📈 Monitoreo de disponibilidad
+
+UptimeRobot Monitorea constantemente si el sitio está activo y alerta ante caídas.
+
+💥 Pruebas de estrés y rendimiento
+
+k6 (https://k6.io) Simula múltiples usuarios simultáneos para evaluar el rendimiento del sitio bajo carga.
 
 ---
 
