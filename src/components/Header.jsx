@@ -9,15 +9,15 @@ function Header() {
   const navigate = useNavigate();
 
   return (
-    <header className="bg-black text-white w-full py-[14px] shadow-md sticky top-0 z-50 flex items-center justify-between px-4">
+    <header className="fixed top-0 left-0 right-0 bg-black text-white w-full py-[14px] shadow-md z-50 flex items-center justify-between px-4">
       <button
         onClick={() => setDrawerOpen((prev) => !prev)}
-        className={`group relative w-8 h-8 flex flex-col justify-center items-center focus:outline-none`}
+        className="group relative w-8 h-8 flex flex-col justify-center items-center focus:outline-none z-50"
         aria-label="Abrir menú"
       >
-        <span className={`block absolute h-0.5 w-6 bg-white rounded transition-all duration-300 ${isDrawerOpen ? 'rotate-45 top-4' : 'top-2 group-hover:w-7'}`}></span>
-        <span className={`block absolute h-0.5 w-6 bg-white rounded transition-all duration-300 ${isDrawerOpen ? 'opacity-0 left-4' : 'top-4 group-hover:w-7'}`}></span>
-        <span className={`block absolute h-0.5 w-6 bg-white rounded transition-all duration-300 ${isDrawerOpen ? '-rotate-45 top-4' : 'top-6 group-hover:w-7'}`}></span>
+        <span className={`block absolute h-0.5 w-6 bg-white rounded transition-all duration-300 ease-in-out ${isDrawerOpen ? 'rotate-45 top-4' : 'top-2 group-hover:w-7'}`}></span>
+        <span className={`block absolute h-0.5 w-6 bg-white rounded transition-all duration-300 ease-in-out ${isDrawerOpen ? 'opacity-0 left-4' : 'top-4 group-hover:w-7'}`}></span>
+        <span className={`block absolute h-0.5 w-6 bg-white rounded transition-all duration-300 ease-in-out ${isDrawerOpen ? '-rotate-45 top-4' : 'top-6 group-hover:w-7'}`}></span>
       </button>
 
       <h1 className="text-xl md:text-2xl font-semibold tracking-wide transition-all duration-300 cursor-pointer hover:scale-110 hover:text-gray-300">
