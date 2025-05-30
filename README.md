@@ -67,5 +67,3 @@ k6 (https://k6.io) Simula múltiples usuarios simultáneos para evaluar el rendi
 
 ---
 
-## 🧱 Estructura del proyecto (sugerida)
-
