@@ -1,17 +1,55 @@
 // CategorySlider.jsx
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-const categories = Array.from({ length: 6 }).map((_, i) => ({
-  id: i,
-  title: `Categoría ${i + 1}`,
-  image: '/images/PORTADA.png'
-}));
+// Asocia cada categoría con su imagen real
+const categories = [
+  {
+    id: 0,
+    title: 'Abrigos',
+    image: '/images/abrigo.png',
+  },
+  {
+    id: 1,
+    title: 'Polos',
+    image: '/images/polo.png',
+  },
+  {
+    id: 2,
+    title: 'Shorts',
+    image: '/images/shorts.png',
+  },
+  {
+    id: 3,
+    title: 'Camisas (Polo)',
+    image: '/images/camisa polo.png',
+  },
+  {
+    id: 4,
+    title: 'Ropa Deportiva',
+    image: '/images/Ropa deportiva.png',
+  },
+  {
+    id: 5,
+    title: 'Calzado',
+    image: '/images/Calzado.png',
+  },
+];
 
 function CategorySlider() {
   const [page, setPage] = useState(0);
   const itemsPerPage = 3;
   const totalPages = Math.ceil(categories.length / itemsPerPage);
+
+  // --- Auto-slide cada 10 segundos ---
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPage((prevPage) => (prevPage + 1) % totalPages);
+    }, 10000); // 10 segundos
+
+    return () => clearInterval(interval);
+  }, [totalPages]);
+  // ------------------------------------
 
   const getItems = (index) => categories.slice(index * itemsPerPage, (index + 1) * itemsPerPage);
 
@@ -33,8 +71,12 @@ function CategorySlider() {
           {Array.from({ length: totalPages }).map((_, index) => (
             <div key={index} className="min-w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 px-1">
               {getItems(index).map((item) => (
-                <div key={item.id} className="bg-gray-100 rounded shadow hover:shadow-xl overflow-hidden transition-transform duration-200 hover:-translate-y-2 cursor-pointer">
-                  <img src={item.image} alt={item.title} className="w-full h-[28rem] object-cover object-top" />
+                <div key={item.id} className="bg-gray-100 rounded shadow hover:shadow-xl overflow-hidden transition-transform duration-200 cursor-pointer flex flex-col">
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="w-full h-[28rem] object-cover object-top transition-transform duration-300 hover:scale-105"
+                  />
                   <div className="p-2 text-center text-sm font-medium">{item.title}</div>
                 </div>
               ))}
