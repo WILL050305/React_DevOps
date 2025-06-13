@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'; // Asegúrate de tener react-router-dom instalado
-import { supabase } from '../lib/supabaseClient';
+import { auth } from '../firebaseConfig';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 
-const FormularioAuth = () => {
+function Auth() {
   const [activo, setActivo] = useState(false);
   const navigate = useNavigate();
 
@@ -19,58 +20,40 @@ const FormularioAuth = () => {
     password: '',
   });
 
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        navigate('/admin');
+      }
+    });
+    return () => unsubscribe();
+  }, [navigate]);
+
   const handleRegister = async () => {
     if (form.password !== form.repetirPassword) {
       alert("Las contraseñas no coinciden");
       return;
     }
-
-    // Verificar si el correo ya está registrado
-    const { data: existingUser, error: userError } = await supabase
-      .from('users')
-      .select('email')
-      .eq('email', form.email)
-      .single();
-
-    if (existingUser) {
-      alert("El correo ya está registrado.");
-      return;
-    }
-
-    const { data, error } = await supabase.auth.signUp({
-      email: form.email,
-      password: form.password,
-      options: {
-        data: {
-          nombre: form.nombre,
-          apellido: form.apellido,
-        },
-      },
-    });
-
-    if (error) {
-      if (error.message.includes('already registered') || error.message.includes('already exists')) {
+    try {
+      await createUserWithEmailAndPassword(auth, form.email, form.password);
+      // Opcional: guardar nombre y apellido en Firestore si lo necesitas
+      alert("Registro exitoso. Revisa tu correo para confirmar.");
+      setActivo(false);
+    } catch (error) {
+      if (error.code === "auth/email-already-in-use") {
         alert("El correo ya está registrado.");
       } else {
         alert("Error al registrar: " + error.message);
       }
-    } else {
-      alert("Registro exitoso. Revisa tu correo para confirmar.");
-      setActivo(false); // Cambia al formulario de inicio de sesión
     }
   };
 
   const handleLogin = async () => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: loginForm.email,
-      password: loginForm.password,
-    });
-
-    if (error) {
+    try {
+      await signInWithEmailAndPassword(auth, loginForm.email, loginForm.password);
+      navigate('/admin'); // Solo redirige aquí, después de login exitoso
+    } catch (error) {
       alert("Error al iniciar sesión: " + error.message);
-    } else {
-      alert("Sesión iniciada con éxito");
-      navigate('/'); // Redirige a Home.jsx (ruta raíz)
     }
   };
 
@@ -129,4 +112,4 @@ const FormularioAuth = () => {
   );
 };
 
-export default FormularioAuth;
+export default Auth;

@@ -9,18 +9,9 @@ import ProductSlider from './components/ProductSlider';
 import CategorySlider from './components/CategorySlider';
 import Campaigns from './components/Campaigns';
 import Auth from './pages/Auth';
+import Admin from './pages/Admin';
+import Home from './pages/Home';
 import { useState } from 'react';
-
-function Home() {
-  return (
-    <>
-      <Portada />
-      <ProductSlider />
-      <CategorySlider />
-      <Campaigns />
-    </>
-  );
-}
 
 function App() {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -49,6 +40,10 @@ function App() {
             />
             <Route
               path="/auth"
+              element={<Auth />}
+            />
+            <Route
+              path="/admin"
               element={
                 <motion.div
                   initial={{ opacity: 0, x: 50 }}
@@ -56,7 +51,7 @@ function App() {
                   exit={{ opacity: 0, x: -50 }}
                   transition={{ duration: 0.4 }}
                 >
-                  <Auth />
+                  <Admin />
                 </motion.div>
               }
             />
