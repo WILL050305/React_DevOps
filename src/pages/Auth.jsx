@@ -60,8 +60,16 @@ const FormularioAuth = () => {
       return;
     }
 
+    // Obtener el usuario logeado y su metadata
+    const { user } = data;
+    const rol = user?.user_metadata?.rol;
+
     alert('Sesión iniciada con éxito');
-    navigate('/');
+    if (rol === 'admin') {
+      navigate('/admin');
+    } else {
+      navigate('/');
+    }
   };
 
   return (
