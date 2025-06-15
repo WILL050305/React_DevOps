@@ -21,7 +21,7 @@ We actively maintain the following versions:
 
 If you discover a security issue in the codebase, **please report it responsibly** by emailing:
 
-📧 **security@verauformen.com**
+📧 **gabrielcardenassanchez80@gmail.com**
 
 We ask that you do **not** publicly disclose the vulnerability until we have had a chance to address it.
 
