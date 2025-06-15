@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Asegúrate de tener react-router-dom instalado
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 
 const FormularioAuth = () => {
@@ -21,22 +21,11 @@ const FormularioAuth = () => {
 
   const handleRegister = async () => {
     if (form.password !== form.repetirPassword) {
-      alert("Las contraseñas no coinciden");
+      alert('Las contraseñas no coinciden');
       return;
     }
 
-    // Verificar si el correo ya está registrado
-    const { data: existingUser, error: userError } = await supabase
-      .from('users')
-      .select('email')
-      .eq('email', form.email)
-      .single();
-
-    if (existingUser) {
-      alert("El correo ya está registrado.");
-      return;
-    }
-
+    // Registrar en Supabase Auth con metadata
     const { data, error } = await supabase.auth.signUp({
       email: form.email,
       password: form.password,
@@ -44,20 +33,19 @@ const FormularioAuth = () => {
         data: {
           nombre: form.nombre,
           apellido: form.apellido,
+          rol: 'cliente', // Rol predeterminado
         },
       },
     });
 
     if (error) {
-      if (error.message.includes('already registered') || error.message.includes('already exists')) {
-        alert("El correo ya está registrado.");
-      } else {
-        alert("Error al registrar: " + error.message);
-      }
-    } else {
-      alert("Registro exitoso. Revisa tu correo para confirmar.");
-      setActivo(false); // Cambia al formulario de inicio de sesión
+      alert('Error al registrar: ' + error.message);
+      console.error(error);
+      return;
     }
+
+    alert('Registro exitoso. Revisa tu correo para verificar la cuenta.');
+    setActivo(false);
   };
 
   const handleLogin = async () => {
@@ -67,11 +55,13 @@ const FormularioAuth = () => {
     });
 
     if (error) {
-      alert("Error al iniciar sesión: " + error.message);
-    } else {
-      alert("Sesión iniciada con éxito");
-      navigate('/'); // Redirige a Home.jsx (ruta raíz)
+      alert('Error al iniciar sesión: ' + error.message);
+      console.error(error);
+      return;
     }
+
+    alert('Sesión iniciada con éxito');
+    navigate('/');
   };
 
   return (
