@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Drawer from './components/Drawer';
+import AdminDrawer from './components/AdminDrawer';
 import Home from './pages/Home';
 import Auth from './pages/Auth';
 import Admin from './pages/Admin';
@@ -14,6 +15,7 @@ function App() {
   const location = useLocation();
   const isAuthPage = location.pathname === '/auth';
   const hideHeaderRoutes = ['/admin']; // rutas donde NO quieres mostrar el header
+  const hideFooterRoutes = ['/auth', '/admin'];
 
   return (
     <div className="relative min-h-screen">
@@ -54,7 +56,7 @@ function App() {
           </Routes>
         </AnimatePresence>
       </main>
-      {!isAuthPage && <Footer />}
+      {!hideFooterRoutes.includes(location.pathname) && <Footer />}
     </div>
   );
 }
