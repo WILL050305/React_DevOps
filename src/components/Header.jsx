@@ -131,10 +131,16 @@ function Header() {
 
   useEffect(() => {
     const manejarActualizacionCarrito = (event) => {
-      const { mensaje, carrito } = event.detail;
+      const { mensaje, carrito, noAbrirDropdown } = event.detail;
       setCarrito(carrito);
-      setCarritoDropdownAbierto(true);
-      // Usar función que ya controla el temporizador
+
+      // Si el carrito está vacío, siempre cerrar el dropdown
+      if (carrito.length === 0) {
+        setCarritoDropdownAbierto(false);
+      } else if (!noAbrirDropdown) {
+        setCarritoDropdownAbierto(true);
+      }
+
       mostrarNotificacion(mensaje);
     };
 
@@ -169,11 +175,23 @@ function Header() {
     }, 2300); // Incluye animación de salida
   };
 
+  // Función para ajustar el precio a .0 o .9
+  const ajustarPrecio = (precio) => {
+    const entero = Math.floor(precio);
+    const centavos = Math.round((precio - entero) * 100);
+    if (centavos % 10 <= 4) {
+      return (entero + Math.floor(centavos / 10) / 10).toFixed(2); // termina en .0
+    } else {
+      return (entero + Math.floor(centavos / 10) / 10 + 0.09).toFixed(2); // termina en .9
+    }
+  };
+
   // Calcula si hay algún producto en su stock máximo
   const hayStockMaximo = carrito.some(item => item.cantidad >= item.stock_disponible);
 
   const cantidadProductos = carrito.length;
-  const totalAPagar = carrito.reduce((acc, item) => acc + item.precio * item.cantidad, 0).toFixed(2);
+  const totalAPagarSinAjuste = carrito.reduce((acc, item) => acc + item.precio * item.cantidad, 0);
+  const totalAPagar = ajustarPrecio(totalAPagarSinAjuste);
 
   return (
     <>
@@ -240,8 +258,10 @@ function Header() {
           </div>
           <div className="relative">
             <button
-              onClick={() => setCarritoDropdownAbierto((prev) => !prev)}
-              className="transition-transform duration-200 hover:scale-125 hover:text-gray-300 focus:text-gray-300"
+              onClick={() => {
+                setCarritoDropdownAbierto((prev) => !prev);
+              }}
+              className="transition-transform duration-200 hover:scale-125 hover:text-gray-300 focus:text-gray-300 relative"
             >
               <ShoppingCart size={22} />
             </button>
@@ -256,7 +276,7 @@ function Header() {
                 <ul className="max-h-[255px] overflow-y-auto pr-2">
                   {carrito.length === 0 ? (
                     <li className="text-center text-gray-500 py-8 px-4 text-sm leading-6">
-                      Sin productos seleccionados.{' '}
+                      Sin productos seleccionados.{" "}
                       <button
                         onClick={() => {
                           navigate('/');
@@ -265,81 +285,83 @@ function Header() {
                         className="text-blue-600 hover:underline font-medium"
                       >
                         Añada productos
-                      </button>{' '}
+                      </button>{" "}
                       por favor.
                     </li>
                   ) : (
-                    carrito.map((item, index) => (
-                      <li key={index} className="flex items-center gap-2 border-b pb-2 mb-2 h-[85px] text-black text-sm">
-                        {/* contenido del producto */}
-                        {/* Imagen */}
-                        <img
-                          src={item.imagen}
-                          alt={item.nombre}
-                          className="w-14 h-14 object-cover rounded"
-                        />
-                        {/* Nombre */}
-                        <div className="flex-1 max-w-[180px] break-words font-medium text-sm leading-5">
-                          {item.nombre}
-                        </div>
-                        {/* Talla */}
-                        <div className="w-14 text-center">
-                          {typeof item.talla === 'object' ? item.talla.nombre : item.talla}
-                        </div>
-                        {/* Cantidad */}
-                        <div className="flex items-center gap-1 w-24 justify-center">
-                          <button
-                            onClick={() => actualizarCantidad(index, item.cantidad - 1)}
-                            className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-                            disabled={item.cantidad <= 1}
-                          >
-                            -
-                          </button>
-                          <input
-                            type="number"
-                            min="1"
-                            max={item.stock_disponible}
-                            value={item.cantidad}
-                            onChange={(e) => {
-                              const nuevaCantidad = parseInt(e.target.value, 10);
-                              if (nuevaCantidad <= item.stock_disponible) {
-                                actualizarCantidad(index, nuevaCantidad);
-                              }
-                            }}
-                            className="w-10 text-center border border-gray-300 rounded"
+                    carrito.map((item, index) => {
+                      return (
+                        <li key={index} className="flex items-center gap-2 border-b pb-2 mb-2 h-[85px] text-black text-sm">
+                          {/* contenido del producto */}
+                          {/* Imagen */}
+                          <img
+                            src={item.imagen}
+                            alt={item.nombre}
+                            className="w-14 h-14 object-cover rounded"
                           />
-                          <button
-                            onClick={() => {
-                              if (item.cantidad < item.stock_disponible) {
-                                actualizarCantidad(index, item.cantidad + 1);
-                              } else {
-                                mostrarAlertaStock(item.nombre, typeof item.talla === 'object' ? item.talla.nombre : item.talla);
-                              }
-                            }}
-                            className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-                          >
-                            +
-                          </button>
-                        </div>
-                        {/* Precio */}
-                        <div className="w-24 text-right font-semibold whitespace-nowrap">
-                          S/. {(item.precio * item.cantidad).toFixed(2)}
-                        </div>
-                        {/* Eliminar */}
-                        <div className="w-20 text-right">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setProductoAEliminar(index);
-                              setMostrarConfirmacion(true);
-                            }}
-                            className="btn-eliminar text-red-500 hover:text-red-700"
-                          >
-                            <Trash2 size={18} />
-                          </button>
-                        </div>
-                      </li>
-                    ))
+                          {/* Nombre */}
+                          <div className="flex-1 max-w-[180px] break-words font-medium text-sm leading-5">
+                            {item.nombre}
+                          </div>
+                          {/* Talla */}
+                          <div className="w-14 text-center">
+                            {typeof item.talla === 'object' ? item.talla.nombre : item.talla}
+                          </div>
+                          {/* Cantidad */}
+                          <div className="flex items-center gap-1 w-24 justify-center">
+                            <button
+                              onClick={() => actualizarCantidad(index, item.cantidad - 1)}
+                              className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
+                              disabled={item.cantidad <= 1}
+                            >
+                              -
+                            </button>
+                            <input
+                              type="number"
+                              min="1"
+                              max={item.stock_disponible}
+                              value={item.cantidad}
+                              onChange={(e) => {
+                                const nuevaCantidad = parseInt(e.target.value, 10);
+                                if (nuevaCantidad <= item.stock_disponible) {
+                                  actualizarCantidad(index, nuevaCantidad);
+                                }
+                              }}
+                              className="w-10 text-center border border-gray-300 rounded"
+                            />
+                            <button
+                              onClick={() => {
+                                if (item.cantidad < item.stock_disponible) {
+                                  actualizarCantidad(index, item.cantidad + 1);
+                                } else {
+                                  mostrarAlertaStock(item.nombre, typeof item.talla === 'object' ? item.talla.nombre : item.talla);
+                                }
+                              }}
+                              className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
+                            >
+                              +
+                            </button>
+                          </div>
+                          {/* Precio */}
+                          <div className="w-24 text-right font-semibold whitespace-nowrap">
+                            S/. {ajustarPrecio(item.precio * item.cantidad)}
+                          </div>
+                          {/* Eliminar */}
+                          <div className="w-20 text-right">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setProductoAEliminar(index);
+                                setMostrarConfirmacion(true);
+                              }}
+                              className="btn-eliminar text-red-500 hover:text-red-700"
+                            >
+                              <Trash2 size={18} />
+                            </button>
+                          </div>
+                        </li>
+                      );
+                    })
                   )}
                 </ul>
                 {carrito.length > 0 && (
@@ -347,7 +369,12 @@ function Header() {
                     <button
                       className="w-full bg-teal-600 text-white py-2 rounded-lg font-semibold hover:bg-teal-700 transition"
                       onClick={() => {
-                        navigate('/checkout');
+                        if (user) {
+                          setCarritoDropdownAbierto(false); // 🔴 Cierra el dropdown al ir a PayView
+                          navigate('/payview');
+                        } else {
+                          navigate('/auth');
+                        }
                       }}
                     >
                       Comprar {cantidadProductos} producto{cantidadProductos > 1 ? 's' : ''} por S/. {totalAPagar}

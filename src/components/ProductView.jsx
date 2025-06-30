@@ -90,22 +90,6 @@ export default function ProductView() {
     fetchProducto();
   }, [id]);
 
-  // Función manejadora para Comprar Ahora
-  const handleComprarAhora = () => {
-    if (!tallaSeleccionada) {
-      alert("Seleccione al menos una talla para continuar.");
-      return;
-    }
-
-    if (cantidad > stockDisponible) {
-      alert("Cantidad excede el stock disponible.");
-      return;
-    }
-
-    // Aquí iría tu lógica de compra
-    alert("Compra procesada (simulada).");
-  };
-
   // Función manejadora para Agregar al Carrito
   const handleAgregarAlCarrito = () => {
     if (!tallaSeleccionada) return alert("Seleccione una talla");
@@ -275,15 +259,8 @@ export default function ProductView() {
           {/* Botones */}
           <div className="flex gap-4">
             <button
-              onClick={handleComprarAhora}
-              className="bg-black text-white px-5 py-2 rounded hover:bg-gray-800"
-            >
-              Comprar Ahora
-            </button>
-
-            <button
               onClick={handleAgregarAlCarrito}
-              className="border px-5 py-2 rounded hover:bg-gray-100"
+              className="border px-5 py-2 rounded transition-colors duration-200 hover:bg-gray-300"
             >
               Agregar al Carrito
             </button>
@@ -307,7 +284,9 @@ export default function ProductView() {
             ))}
           </div>
         ) : (
-          <p className="text-gray-500">No hay productos sugeridos disponibles.</p>
+          <div className="text-center text-gray-500 min-h-[500px] flex items-center justify-center">
+            No hay productos sugeridos disponibles.
+          </div>
         )}
       </div>
     </>
