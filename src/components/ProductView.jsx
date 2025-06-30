@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
+import ProductCard from './ProductCard';
 
 export default function ProductView() {
   const { id } = useParams();
@@ -11,6 +12,7 @@ export default function ProductView() {
   const [tallaSeleccionada, setTallaSeleccionada] = useState(null); // será el objeto { id_talla, nombre, stock }
   const [stockDisponible, setStockDisponible] = useState(null);
   const [cantidad, setCantidad] = useState(1);
+  const [productosSugeridos, setProductosSugeridos] = useState([]);
 
   useEffect(() => {
     const fetchProducto = async () => {
@@ -57,6 +59,31 @@ export default function ProductView() {
           stock: item.stock
         }));
         setTallas(tallasConNombre);
+      }
+
+      // Obtener productos sugeridos de la misma categoría
+      const { data: sugeridosData, error: sugeridosError } = await supabase
+        .from('productos')
+        .select('*')
+        .eq('categoria_id', data.categoria_id)
+        .neq('id', data.id) // Excluir el producto actual
+        .limit(5);
+
+      if (!sugeridosError) {
+        // Obtener las URLs firmadas de las imágenes sugeridas
+        const sugeridosConImagenes = await Promise.all(
+          sugeridosData.map(async (producto) => {
+            const { data: imgData } = await supabase.storage
+              .from('products')
+              .createSignedUrl(producto.imagen_url, 3600);
+
+            return {
+              ...producto,
+              imagenUrl: imgData?.signedUrl || ''
+            };
+          })
+        );
+        setProductosSugeridos(sugeridosConImagenes);
       }
     };
 
@@ -135,32 +162,7 @@ export default function ProductView() {
         {/* Imagen */}
         <div className="flex flex-col items-center">
           <div className="w-full max-w-sm aspect-[3/4] relative">
-            {/* Etiqueta superior según condición */}
-            {(() => {
-              let tieneDescuento = false;
-              let porcentajeDescuento = 0;
-              if (producto.precio_rebajado) {
-                const precio = parseFloat(producto.precio);
-                const rebajado = parseFloat(producto.precio_rebajado);
-                tieneDescuento = rebajado < precio;
-                porcentajeDescuento = Math.floor(((precio - rebajado) / precio) * 100);
-              }
-              return tieneDescuento ? (
-                porcentajeDescuento >= 50 ? (
-                  <div className="absolute top-0 left-0 w-full bg-blue-600 text-white text-xs py-2 px-4 font-bold text-center z-10">
-                    💧 LIQUIDACIÓN
-                  </div>
-                ) : (
-                  <div className="absolute top-0 left-0 w-full bg-red-600 text-white text-xs py-2 px-4 font-bold text-center z-10">
-                    🔥 OFERTA
-                  </div>
-                )
-              ) : (
-                <div className="absolute top-0 left-0 w-full bg-green-600 text-white text-xs py-2 px-4 font-bold text-center z-10">
-                  🆕 NOVEDAD
-                </div>
-              );
-            })()}
+            {/* Imagen sin etiqueta superior */}
             <img
               src={imagenUrl}
               alt={producto.nombre}
@@ -174,7 +176,7 @@ export default function ProductView() {
           <div className="flex items-center gap-2 mb-2">
             <h1 className="text-2xl font-bold">{producto.nombre}</h1>
 
-            {/* Etiquetas condicionales */}
+            {/* Etiquetas condicionales sin porcentaje */}
             {producto.precio_rebajado ? (
               (() => {
                 const precio = parseFloat(producto.precio);
@@ -183,11 +185,11 @@ export default function ProductView() {
 
                 return descuento >= 50 ? (
                   <span className="bg-blue-600 text-white text-xs font-semibold px-2 py-1 rounded">
-                    💧 Liquidación -{descuento}%
+                    💧 Liquidación
                   </span>
                 ) : (
                   <span className="bg-red-600 text-white text-xs font-semibold px-2 py-1 rounded">
-                    🔥 Oferta -{descuento}%
+                    🔥 Oferta
                   </span>
                 );
               })()
@@ -202,24 +204,17 @@ export default function ProductView() {
 
           {/* Precio */}
           {producto.precio_rebajado ? (
-            (() => {
-              const precio = parseFloat(producto.precio);
-              const rebajado = parseFloat(producto.precio_rebajado);
-              const porcentajeDescuento = Math.floor(((precio - rebajado) / precio) * 100);
-              return (
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="text-lg font-bold text-black">
-                    S/. {producto.precio_rebajado}
-                  </span>
-                  <span className="text-sm text-gray-400 line-through">
-                    S/. {producto.precio}
-                  </span>
-                  <span className="text-xs font-semibold text-white bg-red-600 px-2 py-0.5 rounded">
-                    -{porcentajeDescuento}%
-                  </span>
-                </div>
-              );
-            })()
+            <div className="flex items-center gap-2 mt-2">
+              <span className="text-lg font-bold text-black">
+                S/. {producto.precio_rebajado}
+              </span>
+              <span className="text-sm text-gray-400 line-through">
+                S/. {producto.precio}
+              </span>
+              <span className="text-xs font-semibold text-red-600 bg-red-100 px-2 py-1 rounded ml-2">
+                -{Math.floor(((producto.precio - producto.precio_rebajado) / producto.precio) * 100)}%
+              </span>
+            </div>
           ) : (
             <div className="mb-4 text-xl font-bold text-black">S/. {producto.precio}</div>
           )}
@@ -303,9 +298,17 @@ export default function ProductView() {
       </div>
 
       {/* Productos sugeridos */}
-      <div className="max-w-6xl mx-auto px-4 md:px-10 mt-8">
-        <h2 className="text-xl font-semibold mb-6 border-b pb-2">Productos que te podrían interesar</h2>
-        {/* Aquí irán los productos sugeridos en el futuro */}
+      <div className="w-full px-4 md:px-12 mt-8">
+        <h2 className="text-2xl font-semibold mb-6">Productos que te podrían interesar</h2>
+        {productosSugeridos.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+            {productosSugeridos.map((producto) => (
+              <ProductCard key={producto.id} producto={producto} />
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-500">No hay productos sugeridos disponibles.</p>
+        )}
       </div>
     </>
   );

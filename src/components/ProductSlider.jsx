@@ -100,8 +100,8 @@ export default function ProductSlider() {
               className="relative bg-gray-100 rounded shadow overflow-hidden hover:shadow-xl transition-transform duration-200 cursor-pointer"
               onClick={() => navigate(`/producto/${producto.id}`)}
             >
-              {/* Etiqueta superior sin número */}
-              {tieneDescuento && (
+              {/* Etiquetas según condición */}
+              {tieneDescuento ? (
                 porcentajeDescuento >= 50 ? (
                   <div className="absolute top-0 left-0 w-full bg-blue-600 text-white text-xs py-2 px-4 font-bold text-center z-10">
                     💧 LIQUIDACIÓN
@@ -111,6 +111,10 @@ export default function ProductSlider() {
                     🔥 OFERTA
                   </div>
                 )
+              ) : (
+                <div className="absolute top-0 left-0 w-full bg-green-600 text-white text-xs py-2 px-4 font-bold text-center z-10">
+                  🆕 NOVEDAD
+                </div>
               )}
 
               {/* Imagen */}
