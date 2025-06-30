@@ -6,11 +6,38 @@ function Footer() {
         <div className="flex-1 text-left">
           <h3 className="text-lg font-bold mb-4">Más información</h3>
           <ul className="space-y-2 text-sm">
-            <li><a href="#" className="hover:underline">Conócenos</a></li>
-            <li><a href="#" className="hover:underline">Nosotros</a></li>
-            <li><a href="#" className="hover:underline">Jacto</a></li>
-            <li><a href="#" className="hover:underline">Decarios</a></li>
-            <li><a href="#" className="hover:underline">Encuéntranos</a></li>
+            <li>
+              <a
+                href="https://www.facebook.com/people/Vereau-for-mens-Oficial/100083421365189/"
+                className="hover:underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Conócenos
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://www.instagram.com/vereauformens/"
+                className="hover:underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Nosotros
+              </a>
+            </li>
+            {/* <li><a href="#" className="hover:underline">Jacto</a></li>
+            <li><a href="#" className="hover:underline">Decarios</a></li> */}
+            <li>
+              <a
+                href="https://maps.app.goo.gl/tKuTtd3wKELTzCHb6"
+                className="hover:underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Encuéntranos
+              </a>
+            </li>
           </ul>
         </div>
 
@@ -50,9 +77,12 @@ function Footer() {
 
         <div className="flex-1 text-left md:text-right space-y-4">
           <h3 className="text-lg font-bold">VEREAU FOR MEN'S</h3>
-          <p className="text-sm">Email: contacto@vereau.com</p>
-          <p className="text-sm">Teléfono: +51 987 654 321</p>
-          <p className="text-sm">Dirección: Av. Ejemplo 123, Lima, Perú</p>
+          <p className="text-sm">Email: vereauformens@gmail.com</p>
+          <p className="text-sm">Teléfono: 924 937 148</p>
+          <p className="text-sm">
+            Dirección: Chincha Calle Mariscal Castilla #218<br />
+            Pisco Calle Libertad #175, Chincha Alta, Peru
+          </p>
         </div>
       </div>
       <div className="text-center text-sm text-gray-400 mt-8 border-t border-gray-800 pt-6">

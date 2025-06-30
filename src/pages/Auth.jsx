@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabaseClient';
 
 const FormularioAuth = () => {
   const [activo, setActivo] = useState(false);
+  const [registroExitoso, setRegistroExitoso] = useState(false);
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
@@ -25,7 +26,6 @@ const FormularioAuth = () => {
       return;
     }
 
-    // Registrar en Supabase Auth con metadata
     const { data, error } = await supabase.auth.signUp({
       email: form.email,
       password: form.password,
@@ -33,7 +33,7 @@ const FormularioAuth = () => {
         data: {
           nombre: form.nombre,
           apellido: form.apellido,
-          rol: 'cliente', // Rol predeterminado
+          rol: 'cliente',
         },
       },
     });
@@ -44,8 +44,8 @@ const FormularioAuth = () => {
       return;
     }
 
-    alert('Registro exitoso. Revisa tu correo para verificar la cuenta.');
-    setActivo(false);
+    // Mostrar el modal
+    setRegistroExitoso(true);
   };
 
   const handleLogin = async () => {
@@ -122,6 +122,29 @@ const FormularioAuth = () => {
             </button>
           </div>
         </div>
+
+        {/* Modal de verificación */}
+        {registroExitoso && (
+          <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[9999]">
+            <div className="bg-white max-w-md mx-auto p-8 rounded-xl shadow-lg text-center animate-fade-in">
+              <h2 className="text-xl font-bold mb-4 text-red-600">Verificación requerida</h2>
+              <p className="text-gray-700 mb-6 text-sm">
+                Por motivos de seguridad, se ha enviado un enlace de verificación a su correo electrónico. Puede cerrar esta ventana. 
+                La sesión se iniciará automáticamente una vez que acceda al enlace proporcionado. 
+                Esta verificación solo se realizará una vez y no afectará futuros inicios de sesión.
+              </p>
+              <button
+                onClick={() => {
+                  setActivo(false); // volver al login
+                  setRegistroExitoso(false);
+                }}
+                className="bg-teal-500 hover:bg-teal-600 text-white px-6 py-2 rounded-full font-semibold"
+              >
+                Entendido
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
