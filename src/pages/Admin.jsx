@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import AdminDrawer from '../components/AdminDrawer';
 import { AnimatePresence, motion } from 'framer-motion';
 import FiltroProductos from '../components/FiltroProductos';
+import ResumenAdmin from '../components/ResumenAdmin';
+import VentasAdmin from '../components/VentasAdmin';
 
 function Admin() {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -51,14 +53,12 @@ function Admin() {
         <div className="bg-white shadow-lg rounded-lg p-8 text-center w-full">
           {section === 'dashboard' && (
             <>
-              <h2 className="text-2xl font-bold mb-2">Panel de Administración</h2>
-              <p className="text-lg">Bienvenido al panel de administrador.</p>
+              <h2 className="text-2xl font-bold mb-6">Panel de Administración</h2>
+              <ResumenAdmin />
             </>
           )}
           {section === 'productos' && <FiltroProductos />}
-          {section === 'ventas' && (
-            <h1 className="text-3xl font-bold">Sección Ventas</h1>
-          )}
+          {section === 'ventas' && <VentasAdmin />}
         </div>
       </div>
     </div>

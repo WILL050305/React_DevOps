@@ -242,10 +242,10 @@ function Header() {
                   className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100"
                   onClick={() => {
                     setShowMenu(false);
-                    navigate('/perfil'); // Cambia la ruta según tu app
+                    navigate('/profile'); // Cambiado a /profile
                   }}
                 >
-                  Mi perfil
+                  Mis compras
                 </button>
                 <button
                   className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-100 font-semibold"

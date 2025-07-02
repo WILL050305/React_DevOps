@@ -44,8 +44,52 @@ const FormularioAuth = () => {
       return;
     }
 
-    // Mostrar el modal
+    // Mostrar el modal de verificación
     setRegistroExitoso(true);
+
+    // Insertar en la tabla usuarios (si ya hay un user disponible)
+    if (data?.user) {
+      const { id, email, user_metadata } = data.user;
+      const { nombre, apellido } = user_metadata;
+
+      // Verifica si ya existe el usuario
+      const { data: existe, error: errorExiste } = await supabase
+        .from('usuarios')
+        .select('id_usuario')
+        .eq('id_usuario', id)
+        .maybeSingle();
+
+      if (errorExiste) {
+        console.error('Error al verificar existencia:', errorExiste.message);
+      } else if (!existe) {
+        // Si no existe, inserta
+        const { error: errorInsert } = await supabase.from('usuarios').insert({
+          id_usuario: id,
+          nombre,
+          apellido,
+          correo: email,
+        });
+
+        if (errorInsert) {
+          console.error('Error al insertar nuevo usuario:', errorInsert.message);
+          alert('Error al guardar el usuario en la base de datos');
+        }
+      } else {
+        // Si existe, actualiza datos
+        const { error: errorUpdate } = await supabase
+          .from('usuarios')
+          .update({
+            nombre,
+            apellido,
+            correo: email,
+          })
+          .eq('id_usuario', id);
+
+        if (errorUpdate) {
+          console.error('Error al actualizar usuario:', errorUpdate.message);
+        }
+      }
+    }
   };
 
   const handleLogin = async () => {
@@ -60,9 +104,50 @@ const FormularioAuth = () => {
       return;
     }
 
-    // Obtener el usuario logeado y su metadata
     const { user } = data;
+    const id = user?.id;
+    const email = user?.email;
+    const { nombre, apellido } = user?.user_metadata || {};
     const rol = user?.user_metadata?.rol;
+
+    // 1. Verifica si ya existe
+    const { data: existe, error: errorExiste } = await supabase
+      .from('usuarios')
+      .select('id_usuario')
+      .eq('id_usuario', id)
+      .maybeSingle();
+
+    if (errorExiste) {
+      console.error('Error al verificar existencia:', errorExiste.message);
+    } else if (!existe) {
+      // 2. Si no existe, insertamos
+      const { error: errorInsert } = await supabase.from('usuarios').insert({
+        id_usuario: id,
+        nombre,
+        apellido,
+        correo: email,
+      });
+
+      if (errorInsert) {
+        console.error('Error al insertar en usuarios:', errorInsert.message);
+        alert('No se pudo registrar el usuario en la base de datos.');
+        return;
+      }
+    } else {
+      // 3. Si existe pero sus datos están incompletos, actualízalo
+      const { error: errorUpdate } = await supabase
+        .from('usuarios')
+        .update({
+          nombre,
+          apellido,
+          correo: email,
+        })
+        .eq('id_usuario', id);
+
+      if (errorUpdate) {
+        console.error('Error al actualizar usuario:', errorUpdate.message);
+      }
+    }
 
     alert('Sesión iniciada con éxito');
     if (rol === 'admin') {

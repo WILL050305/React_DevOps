@@ -61,26 +61,75 @@ export default function PayView() {
             }]
           });
         },
-        onApprove: (data, actions) => {
-          return actions.order.capture().then(details => {
+        onApprove: async (data, actions) => {
+          return actions.order.capture().then(async details => {
             console.log('Detalles de la compra:', details);
 
+            // Registro en la tabla 'ventas'
+            const { data: venta, error: errorVenta } = await supabase
+              .from('ventas')
+              .insert([{ id_usuario: user.id }])
+              .select()
+              .single();
+
+            if (errorVenta) {
+              console.error('Error al registrar la venta:', errorVenta);
+              alert('Error al registrar la venta');
+              return;
+            }
+
+            const idVenta = venta.id; // ✅ campo correcto
+            // Registro en la tabla 'ventas_detalle'
+            const detalles = carrito.map(item => ({
+              id_venta: idVenta,
+              id_producto: item.id, // ✅ ahora sí
+              id_talla: item.talla && typeof item.talla === 'object' ? item.talla.id_talla : item.talla || null,
+              cantidad: item.cantidad,
+              precio_unitario: item.precio
+            }));
+
+            const detallesValidos = detalles.filter(d =>
+              d.id_producto &&
+              d.cantidad > 0 &&
+              d.precio_unitario > 0 &&
+              d.id_talla !== null && d.id_talla !== undefined
+            );
+
+            if (detallesValidos.length === 0) {
+              alert('Error: No hay detalles válidos para registrar.');
+              return;
+            }
+
+            const { error: errorDetalle } = await supabase
+              .from('ventas_detalle')
+              .insert(detallesValidos);
+
+            if (errorDetalle) {
+              console.error('Error al registrar el detalle de la venta:', errorDetalle);
+              alert('Error al registrar el detalle de la venta');
+              return;
+            }
+
+            // Reducir stock por cada producto
+            for (const producto of carrito) {
+              await supabase.rpc('reducir_stock', {
+                p_id_producto: producto.id, // ✅
+                p_id_talla: typeof producto.talla === 'object' ? producto.talla.id_talla : producto.talla,
+                p_cantidad: producto.cantidad
+              });
+            }
+
             setCarritoOriginal([...carrito]);
-
             localStorage.removeItem('carrito');
-
             window.dispatchEvent(new CustomEvent('carrito:actualizado', {
               detail: {
                 carrito: [],
                 mensaje: 'Compra realizada. Carrito vaciado.',
-                noAbrirDropdown: true // Agregar esta bandera
+                noAbrirDropdown: true
               }
             }));
-
             window.dispatchEvent(new CustomEvent('carrito:bloqueado'));
-
             setCarrito([]);
-
             setPagoExitoso(true);
           });
         },
@@ -165,16 +214,13 @@ export default function PayView() {
                 <CheckCircle className="text-green-500" size={64} />
                 <h4 className="text-xl font-semibold mt-4 mb-2">¡Pago exitoso!</h4>
                 <p className="mb-4">
-                  Puede verificar el proceso en su{' '}
-                  <Link to="/profile" className="text-blue-600 hover:underline font-medium">
-                    perfil
-                  </Link>.
+                  Puede verificar su compra en <span className="font-semibold">Mis compras</span>.
                 </p>
                 <button
                   onClick={() => navigate('/profile')}
                   className="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                 >
-                  Ir al perfil
+                  Ir a Mis compras
                 </button>
               </motion.div>
             </motion.div>
@@ -302,23 +348,9 @@ export default function PayView() {
       {/* Métodos de pago siempre visibles */}
       <div className={`mt-6 text-center space-y-4 ${pagoExitoso ? 'opacity-50 pointer-events-none' : ''}`}>
         <h3 className="text-lg font-semibold mb-4">Elige un método de pago</h3>
-        <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+        <div className="flex justify-center items-center">
           {/* Botón de PayPal */}
           <div ref={paypalRef} className="w-[300px]" />
-          {/* Botón de Mercado Pago */}
-          <button
-            onClick={() => console.log('Pago con Mercado Pago')}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-          >
-            Pagar con Mercado Pago
-          </button>
-          {/* Botón de Yape */}
-          <button
-            onClick={() => console.log('Pago con Yape')}
-            className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
-          >
-            Pagar con Yape
-          </button>
         </div>
       </div>
     </>

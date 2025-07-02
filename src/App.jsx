@@ -14,6 +14,8 @@ import FiltroProductos from './components/FiltroProductos';
 import CrearCampaigns from './components/CrearCampaigns';
 import EditCampaigns from './components/EditCampaigns';
 import PayView from './components/PayView';
+import Profile from './components/Profile';
+import VentasAdmin from './components/VentasAdmin';
 import { useState } from 'react';
 
 function App() {
@@ -66,6 +68,9 @@ function App() {
             <Route path="/productos" element={<FiltroProductos />} />
             <Route path="/edit-campaigns" element={<EditCampaigns />} />
             <Route path="/payview" element={<PayView />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/ventas-admin" element={<VentasAdmin />} />
+            <Route path="/admin/ventas" element={<VentasAdmin />} />
           </Routes>
         </AnimatePresence>
       </main>
