@@ -34,7 +34,6 @@ function Home() {
       <Campaigns />
 
       {/* Footer */}
-      <Footer />
     </div>
   );
 }

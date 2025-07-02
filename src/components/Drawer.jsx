@@ -30,9 +30,33 @@ function Drawer({ onClose }) {
           </button>
         </div>
         <nav className="space-y-2">
-          <button onClick={() => handleNavigate('/')} className="block w-full text-left px-3 py-2 hover:bg-gray-700 rounded">Inicio</button>
-          <button onClick={() => handleNavigate('/categorias')} className="block w-full text-left px-3 py-2 hover:bg-gray-700 rounded">Catálogo</button>
-          <button onClick={() => handleNavigate('/campanas')} className="block w-full text-left px-3 py-2 hover:bg-gray-700 rounded">Campañas</button>
+          <button
+            onClick={() => handleNavigate('/')}
+            className="block w-full text-left px-3 py-2 hover:bg-gray-700 rounded"
+          >
+            Inicio
+          </button>
+          <button
+            onClick={() => handleNavigate('/views/todos/0')}
+            className="block w-full text-left px-3 py-2 hover:bg-gray-700 rounded"
+          >
+            Catálogo
+          </button>
+          <button
+            onClick={() => {
+              onClose();
+              navigate('/');
+              setTimeout(() => {
+                const target = document.getElementById('campanas');
+                if (target) {
+                  target.scrollIntoView({ behavior: 'smooth' });
+                }
+              }, 300); // espera a que cargue la página
+            }}
+            className="block w-full text-left px-3 py-2 hover:bg-gray-700 rounded"
+          >
+            Campañas
+          </button>
         </nav>
       </div>
       <div className="flex-1" onClick={onClose} />
