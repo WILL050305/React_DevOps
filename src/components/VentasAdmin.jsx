@@ -44,12 +44,8 @@ export default function VentasAdmin() {
       `)
       .order('fecha', { ascending: false });
 
-    // Agrega filtros por fecha si están definidos
-    if (fechaInicio) {
-      query = query.gte('fecha', fechaInicio);
-    }
+    if (fechaInicio) query = query.gte('fecha', fechaInicio);
     if (fechaFin) {
-      // Para incluir el día completo
       const fin = new Date(fechaFin);
       fin.setHours(23, 59, 59, 999);
       query = query.lte('fecha', fin.toISOString());
@@ -68,11 +64,10 @@ export default function VentasAdmin() {
   };
 
   useEffect(() => {
-    fetchVentas(); // Carga inicial
+    fetchVentas();
     // eslint-disable-next-line
   }, []);
 
-  // Exportar a Excel
   const exportarExcel = () => {
     const datosExportar = [];
 
@@ -86,7 +81,7 @@ export default function VentasAdmin() {
           Cantidad: detalle.cantidad,
           'Precio Unitario': parseFloat(detalle.precio_unitario).toFixed(2),
           Total: (detalle.cantidad * parseFloat(detalle.precio_unitario)).toFixed(2),
-          Fecha: new Date(venta.fecha).toLocaleString(), // añade la fecha formateada
+          Fecha: new Date(venta.fecha).toLocaleString(),
         });
       });
     });
